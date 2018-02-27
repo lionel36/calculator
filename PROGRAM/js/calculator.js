@@ -3,6 +3,9 @@ var value1 = 0;
 var value2 = 0;
 var result = 0;
 
+//小数の桁数
+var order = 0;
+
 //計算用の演算子をリセット
 var operator = '';
 var dot = '';
@@ -29,7 +32,7 @@ equalButton.addEventListener('click',equal,false);
 
 //小数点ボタンを取得
 var dotButton = document.getElementById('dot');
-dotButton.addEventListener('click',dot,false);
+dotButton.addEventListener('click',setDot,false);
 
 //クリアボタンを取得
 var allClearButton = document.getElementById('clear');
@@ -45,24 +48,39 @@ function showNumber(event){
 	var screen = document.getElementById('span_screen');
 
 	if(operator !== ''){
-		value2 = (value2*10) + number;
+		if(dot !== ''){
+			order = checkOrderOfNumber(value2);
 
-		screen.innerText = value2;
+			value2 = value2 + (number/10);
+
+			screen.innerText = value2;
+		}else{
+			value2 = (value2*10) + number;
+
+			screen.innerText = value2;
+		}
 	}else{
 		result = 0;
-		
-		value1 = (value1*10) + number;
 
-		screen.innerText = value1;
+		if(dot !== ''){
+			value1 = value1 + (number/10);
+
+			screen.innerText = value1;
+		}else{
+			value1 = (value1*10) + number;
+
+			screen.innerText = value1;
+		}
 	}
 }
 
 //演算子を登録する関数
 function operate(event){
 	operator = event.target.value;
+	dot = '';
 }
 
-function dot(){
+function setDot(){
 	dot = '.';
 }
 
@@ -87,6 +105,7 @@ function equal(){
 	value1 = 0;
 	value2 = 0;
 	operator = '';
+	dot = '';
 
 	screen.innerText = result;
 }
@@ -116,5 +135,16 @@ function deleteNumber(){
 		value1 = Math.floor(value1/10);
 
 		screen.innerText = value1;
+	}
+}
+
+function checkOrderOfNumber(number){
+	var stringNumber = String(number);
+	var syousuu = stringNumber.split('.');
+
+	if(syousuu.length <= 1){
+		return 0;
+	}else{
+		return syousuu[1].length;
 	}
 }
